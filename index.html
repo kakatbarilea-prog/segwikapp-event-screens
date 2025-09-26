@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Segwik AI – Event Screens (Events-First)</title>
+<title>Segwik AI – Event Screens (6-Scenarios)</title>
 <style>
   :root{
     --bg:#f6f8fb; --card:#fff; --ink:#243048; --muted:#667085; --line:#e6ebf2;
@@ -35,11 +35,9 @@
     overflow:hidden; text-overflow:ellipsis; display:flex; align-items:center; gap:10px;
   }
   .push-notice.show{transform:translateX(-50%) translateY(0); opacity:1;}
-  .push-action{
-    background:transparent; border:none; color:#fff; font-weight:800; cursor:pointer;
-    text-decoration:underline; padding:0; margin:0;
-  }
+  .push-action{background:transparent; border:none; color:#fff; font-weight:800; cursor:pointer; text-decoration:underline; padding:0; margin:0;}
 
+  /* CHANGED previously: removed extra scroll-padding-top to eliminate top gap on snap */
   .content{flex:1; overflow:auto; background:var(--bg); scroll-snap-type:y mandatory;}
   .screen{scroll-snap-align:start; padding-bottom:var(--footer-h); min-height:calc(100%); position:relative;}
 
@@ -48,22 +46,22 @@
   .title-text{font-weight:800;color:var(--accent);font-size:18px}
   .count-pill{padding:6px 12px;border:1px solid var(--pill-border);background:var(--pill);border-radius:999px;font-size:12px;min-width:96px;text-align:center;color:#21314f;font-weight:700}
 
-  .events{padding:10px 16px 16px; display:grid; gap:10px}
-  .ev-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:10px}
-  .ev-top{display:flex;gap:10px}
-  .ev-ico{width:40px;height:40px;border-radius:10px;background:#eef4ff;border:1px solid #cfe1ff;display:grid;place-items:center}
-  .ev-header{flex:1}
-  .ev-name{font-weight:800}
-  .ev-sub{font-size:12px;color:var(--muted)}
-  .ev-sub a{color:#0F2D56;text-decoration:none; font-weight:600}
-  .ev-sub a:hover{text-decoration:underline}
-  .ev-actions{display:grid;gap:6px}
-  .row{display:flex;gap:8px;flex-wrap:wrap}
-  select.ev-rsvp{flex:1; padding:8px; border-radius:8px; border:1px solid #cbd5e1; font-size:12px}
+  .ev-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin:12px;display:grid;gap:12px}
+  .ev-hero{width:100%;aspect-ratio:16/9;border-radius:12px;background:#eaf0ff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width=\"600\" height=\"338\"><rect width=\"100%\" height=\"100%\" fill=\"%23eaf0ff\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" font-family=\"Segoe UI\" font-size=\"22\" fill=\"%2390a7d9\">16:9 Featured Image</text></svg>') center/contain no-repeat;border:1px solid #cfe1ff}
+  .ev-name{font-weight:800;font-size:16px}
+  .ev-desc{font-size:13px;color:var(--muted);position:relative}
+  .ev-desc.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .ev-desc .more{color:#0F2D56;font-weight:700;cursor:pointer;white-space:nowrap}
 
-  .cta{padding:8px;border-radius:8px;border:1px solid var(--btn);background:var(--btn);color:#fff;font-size:12px;cursor:pointer;text-align:center}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  .cta{padding:10px 12px;border-radius:10px;border:1px solid var(--btn);background:var(--btn);color:#fff;font-size:12px;cursor:pointer;text-align:center}
   .cta.ghost{background:#fff;color:#243048;border:1px solid #cbd5e1}
   .cta.success{background:var(--success);border-color:var(--success)}
+  .cta.dropdown{position:relative; }
+  .menu{position:absolute;top:100%;left:0;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,.12);padding:6px;display:none;z-index:20}
+  .menu.show{display:block}
+  .menu button{display:block;width:180px;text-align:left;border:none;background:transparent;padding:8px;border-radius:8px;font-size:12px;cursor:pointer}
+  .menu button:hover{background:#f3f6ff}
 
   .tray{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:8px;border-top:1px solid var(--line);background:#fff;position:sticky;bottom:0}
   .ibtn{padding:8px;border:1px solid var(--line);border-radius:10px;background:#f8fafc;display:grid;place-items:center;font-size:11px;cursor:pointer}
@@ -84,36 +82,38 @@
   .attendees{display:grid;gap:8px;max-height:52vh;overflow:auto}
   .a-card{border:1px solid #e6ebf2;border-radius:10px;padding:10px;display:grid;gap:6px}
   .a-top{display:flex;gap:10px;align-items:center}
-  .ava{width:40px;height:40px;border-radius:50%;background:#dbe4ff;display:grid;place-items:center;font-weight:700;color:#0F2D56;border:1px solid #c8d4ff;font-size:14px}
+  .ava{width:40px;height:40px;border-radius:50%;background:#dbe4ff;display:grid;place-items:center;font-weight:700;color:#0F2D56;border:1px solid #c8d4ff;font-size:14px;overflow:hidden}
+  .ava img{width:100%;height:100%;object-fit:cover;border-radius:50%}
   .a-name{font-weight:700}
   .a-role{font-size:12px;color:#667085}
   .a-chips{display:flex;gap:6px;flex-wrap:wrap}
   .chip{font-size:11px;color:#4a5568;background:#f1f5f9;padding:2px 6px;border-radius:999px;border:1px solid #e2e8f0}
   .a-actions{display:flex;gap:6px;flex-wrap:wrap}
-  .btn-sm{padding:6px 8px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:#243048;font-size:11px;cursor:pointer}
+  .btn-sm{padding:8px 10px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;color:#243048;font-size:12px;cursor:pointer}
   .btn-sm.primary{border:1px solid var(--btn);background:var(--btn);color:#fff}
   .btn-sm.success{background:var(--success);border-color:var(--success);color:#fff}
+  .btn-sm.dropdown{position:relative}
+  .btn-sm .menu{min-width:220px}
 
   .row-btns{margin-top:8px;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
-  .i-btn{padding:8px 10px;border-radius:10px;border:1px solid var(--pill-border);background:#eef4ff;font-size:12px;cursor:pointer}
+  .i-btn{padding:10px 12px;border-radius:10px;border:1px solid var(--pill-border);background:#eef4ff;font-size:12px;cursor:pointer}
   .i-btn.primary{border:1px solid var(--btn);background:var(--btn);color:#fff;font-weight:700}
 
-  /* Textareas only resize vertically */
   textarea{resize:vertical;}
-
-  .sheet textarea{width:100%;min-height:110px;border:1px solid #d3def0;border-radius:10px;padding:8px;font-size:13px}
+  .sheet textarea{width:100%;min-height:120px;border:1px solid #d3def0;border-radius:10px;padding:8px;font-size:13px}
   .sheet .field{display:grid;gap:6px;margin:8px 0}
   .sheet input, .sheet select{width:100%;border:1px solid #d3def0;border-radius:10px;padding:8px;font-size:13px}
-  #takeOverlay .sheet textarea{min-height:56vh;}
-  .error-hint{font-size:12px;color:#b42318;margin-top:-4px}
 
-  /* Longer message box for Email/Text compose popup */
-  #commOverlay .sheet textarea{min-height:320px;}
+  #prepOverlay .sheet textarea{min-height:240px;}
+  #commOverlay .sheet textarea{min-height:240px;}
+
+  /* NEW: link-like button for See More placed outside clamped text */
+  .linkish{background:transparent;border:none;color:#0F2D56;font-weight:700;cursor:pointer;padding:0;margin:0;font-size:13px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="phone">
+  <div class="phone" role="application" aria-label="Segwik Events">
     <div class="notch"></div>
     <div class="status">
       <div class="logo"><span class="bot"></span><span>SEGWiK</span></div>
@@ -122,27 +122,190 @@
     <div id="push" class="push-notice"></div>
 
     <div class="content" id="content">
-      <section class="screen" id="screen-upcoming">
+
+      <!-- 1) Upcoming Event – Not Registered -->
+      <section class="screen" id="scr-1">
         <div class="page-head">
           <div class="page-title">
-            <div class="title-text">Upcoming Events</div>
-            <span class="count-pill" id="badgeUpcoming">0 items</span>
+            <div class="title-text">Upcoming Event</div>
+            <span class="count-pill" id="badge-1">Not Registered</span>
           </div>
         </div>
-        <div class="undo-bar" id="undoUpcoming"></div>
-        <div class="events" id="upcomingList"></div>
+        <div class="ev-card">
+          <div class="ev-hero"></div>
+          <div class="ev-name">Local Chamber Breakfast</div>
+          <div class="ev-desc clamp" id="desc-2">
+            A high-tempo referral meeting with measurable introductions, a featured talk, and time-boxed 1-to-1 scheduling.
+            <span class="more" onclick="openLong('BNI Rock Solid — Details', lorem)">…See More</span>
+          </div>
+          <div class="row">
+            <button class="cta" id="reg-1" onclick="register('1')">Register</button>
+            <button class="cta ghost" onclick="openPeople('who-1','Who’s Going', attendeesA, {bulk:true})">See Who’s Going (12)</button>
+            <div class="cta ghost dropdown" onclick="toggleMenu(event)">
+              Share Event
+              <div class="menu">
+                <button onclick="share('LinkedIn')">Share on LinkedIn</button>
+                <button onclick="share('Facebook')">Share on Facebook</button>
+                <button onclick="share('Instagram')">Share on Instagram</button>
+              </div>
+            </div>
+            <button class="cta ghost" onclick="notNow('scr-1')">Not Now</button>
+          </div>
+        </div>
       </section>
 
-      <section class="screen" id="screen-previous">
+      <!-- 2) Upcoming Event – Registered -->
+      <section class="screen" id="scr-2">
         <div class="page-head">
           <div class="page-title">
-            <div class="title-text">Previous Events</div>
-            <span class="count-pill" id="badgePrevious">0 items</span>
+            <div class="title-text">Upcoming Event</div>
+            <span class="count-pill" id="badge-2">Registered</span>
           </div>
         </div>
-        <div class="undo-bar" id="undoPrevious"></div>
-        <div class="events" id="previousList"></div>
+        <div class="ev-card">
+          <div class="ev-hero"></div>
+          <div class="ev-name">BNI Rock Solid (Weekly)</div>
+          <div class="ev-desc clamp" id="desc-2">
+            A high-tempo referral meeting with measurable introductions, a featured talk, and time-boxed 1-to-1 scheduling.
+            <span class="more" onclick="openLong('BNI Rock Solid — Details', lorem)">…See More</span>
+          </div>
+          <div class="row" id="row-2">
+            <!-- Post-register state -->
+            <button class="cta ghost" onclick="openPeople('who-2','Who’s Going', attendeesB, {bulk:true})">See Who’s Going (24)</button>
+            <div class="cta ghost dropdown" onclick="toggleMenu(event)">
+              Share Event
+              <div class="menu">
+                <button onclick="share('LinkedIn')">Share on LinkedIn</button>
+                <button onclick="share('Facebook')">Share on Facebook</button>
+                <button onclick="share('Instagram')">Share on Instagram</button>
+              </div>
+            </div>
+            <button class="cta" onclick="openPrep('BNI Rock Solid — Prep Notes')">Prep for Event</button>
+          </div>
+        </div>
       </section>
+
+      <!-- 3) Ongoing – Not Checked In -->
+      <section class="screen" id="scr-3">
+        <div class="page-head">
+          <div class="page-title">
+            <div class="title-text">Ongoing Event</div>
+            <span class="count-pill" id="badge-3">Not Checked In</span>
+          </div>
+        </div>
+        <div class="ev-card">
+          <div class="ev-hero"></div>
+          <div class="ev-name">Startup Mixer</div>
+          <div class="ev-desc clamp" id="desc-3">
+            Casual networking with founder lightning talks, demo corners, and investor office hours.
+            <span class="more" onclick="openLong('Startup Mixer — Agenda', loremAgenda)">…See More</span>
+          </div>
+          <div class="row" id="row-3">
+            <button class="cta" onclick="checkIn('3')">Check In</button>
+            <button class="cta ghost" onclick="openPeople('who-3','Who’s Here Now', attendeesC, {bulk:true})">See Who’s Here (15)</button>
+            <button class="cta" onclick="openPrep('Startup Mixer — Prep Notes')">View Prep Notes</button>
+            <button class="cta ghost" onclick="openLong('Agenda', loremAgenda)">View Agenda</button>
+            <button class="cta ghost" onclick="openPeople('spk-3','Speakers', speakers, {bulk:false})">View Speakers</button>
+            <button class="cta ghost" onclick="takeSelfie()">Take Selfies</button>
+            <div class="cta ghost dropdown" onclick="toggleMenu(event)">
+              Share Event
+              <div class="menu">
+                <button onclick="share('LinkedIn')">Share on LinkedIn</button>
+                <button onclick="share('Facebook')">Share on Facebook</button>
+                <button onclick="share('Instagram')">Share on Instagram</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4) Ongoing – Checked-in -->
+      <section class="screen" id="scr-4">
+        <div class="page-head">
+          <div class="page-title">
+            <div class="title-text">Ongoing Event</div>
+            <span class="count-pill" id="badge-4">Checked-in</span>
+          </div>
+        </div>
+        <div class="ev-card">
+          <div class="ev-hero"></div>
+          <div class="ev-name">Design & UX Summit</div>
+          <div class="ev-desc clamp" id="desc-4">
+            Deep-dive sessions on product design, research, and design systems with live critiques.
+            <span class="more" onclick="openLong('Design & UX Summit — Details', lorem)">…See More</span>
+          </div>
+          <div class="row" id="row-4">
+            <!-- Post-checkin state -->
+            <button class="cta ghost" onclick="openPeople('who-4','Who’s Here Now', attendeesD, {bulk:true})">See Who’s Here (42)</button>
+            <button class="cta" onclick="openPrep('Design & UX Summit — Prep Notes')">View Prep Notes</button>
+            <button class="cta ghost" onclick="openLong('Agenda', loremAgenda)">View Agenda</button>
+            <button class="cta ghost" onclick="openPeople('spk-4','Speakers', speakers, {bulk:false})">View Speakers</button>
+            <button class="cta ghost" onclick="takeSelfie()">Take Selfies</button>
+            <div class="cta ghost dropdown" onclick="toggleMenu(event)">
+              Share Event
+              <div class="menu">
+                <button onclick="share('LinkedIn')">Share on LinkedIn</button>
+                <button onclick="share('Facebook')">Share on Facebook</button>
+                <button onclick="share('Instagram')">Share on Instagram</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5) Past – Attended -->
+      <section class="screen" id="scr-5">
+        <div class="page-head">
+          <div class="page-title">
+            <div class="title-text">Past Event</div>
+            <span class="count-pill" id="badge-5">Attended</span>
+          </div>
+        </div>
+        <div class="ev-card">
+          <div class="ev-hero"></div>
+          <div class="ev-name">Chamber Mixer (Downtown)</div>
+          <div class="ev-desc clamp" id="desc-5">
+            Open-format mixer with sponsor tables and a capital-access panel.
+            <span class="more" onclick="openLong('Chamber Mixer — Recap', lorem)">…See More</span>
+          </div>
+          <div class="row">
+            <button class="cta ghost" onclick="openPeople('who-5','Attendees', attendeesE, {bulk:true})">View Attendees (58)</button>
+            <button class="cta" onclick="openPrep('Add Takeaways — Chamber Mixer', true)">Add Takeaways</button>
+            <div class="cta ghost dropdown" onclick="toggleMenu(event)">
+              Share Event
+              <div class="menu">
+                <button onclick="share('LinkedIn')">Share on LinkedIn</button>
+                <button onclick="share('Facebook')">Share on Facebook</button>
+                <button onclick="share('Instagram')">Share on Instagram</button>
+              </div>
+            </div>
+            <button class="cta ghost" id="rem-like-5" onclick="toggleLike('rem-like-5','You’ll get reminders for similar events.')">Remind Me About Future Events Like This</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6) Past – Did Not Attend -->
+      <section class="screen" id="scr-6">
+        <div class="page-head">
+          <div class="page-title">
+            <div class="title-text">Past Event</div>
+            <span class="count-pill" id="badge-6">Did Not Attend</span>
+          </div>
+        </div>
+        <div class="ev-card">
+          <div class="ev-hero"></div>
+          <div class="ev-name">Small Business Expo</div>
+          <div class="ev-desc clamp" id="desc-6">
+            Vendor hall, learning tracks, and pitch lounge for SMB owners and operators.
+            <span class="more" onclick="openLong('Small Business Expo — Recap', lorem)">…See More</span>
+          </div>
+          <div class="row">
+            <button class="cta ghost" onclick="openPeople('who-6','Attendees', attendeesF, {bulk:true})">View Attendees (103)</button>
+            <button class="cta ghost" id="alerts-6" onclick="toggleLike('alerts-6','You’ll get alerts for similar events.')">Get Alerts for Similar Events</button>
+          </div>
+        </div>
+      </section>
+
     </div>
 
     <div class="tray" id="footer-tray">
@@ -153,11 +316,11 @@
       <div class="ibtn" data-icon="note"></div>
     </div>
 
-    <!-- Event Details -->
-    <div id="detailsOverlay" class="overlay" onclick="overlayClose(event,'detailsOverlay')">
+    <!-- Long Description / Agenda -->
+    <div id="detailsOverlay" class="overlay" onclick="overlayClose(event,'detailsOverlay')" role="dialog" aria-modal="true">
       <div class="sheet" onclick="event.stopPropagation()">
         <div class="sheet-head">
-          <div class="sheet-title" id="detailsTitle">Event Details</div>
+          <div class="sheet-title" id="detailsTitle">Details</div>
           <div class="x" onclick="closeSheet('detailsOverlay')">×</div>
         </div>
         <div id="detailsBody" class="small"></div>
@@ -167,74 +330,39 @@
       </div>
     </div>
 
-    <!-- RSVPs / Attendees -->
-    <div id="attOverlay" class="overlay" onclick="overlayClose(event,'attOverlay')">
+    <!-- People / Attendees / Speakers (with Bulk Actions) -->
+    <div id="attOverlay" class="overlay" onclick="overlayClose(event,'attOverlay')" role="dialog" aria-modal="true">
       <div class="sheet" onclick="event.stopPropagation()">
         <div class="sheet-head">
-          <div class="sheet-title" id="attTitle">RSVPs</div>
+          <div class="sheet-title" id="attTitle">People</div>
           <div class="x" onclick="closeSheet('attOverlay')">×</div>
         </div>
         <div id="attBody" class="attendees"></div>
-        <div class="row-btns">
-          <button class="i-btn" onclick="closeSheet('attOverlay')">Close</button>
+        <div id="bulkRow" class="row-btns" style="display:none;">
+          <button class="i-btn" onclick="bulkEmail()">Email All</button>
+          <button class="i-btn" onclick="bulkText()">Text All</button>
+          <button class="i-btn primary" onclick="bulkJourney()">Add All to Journey</button>
         </div>
       </div>
     </div>
 
-    <!-- Draft Follow-Ups -->
-    <div id="draftOverlay" class="overlay" onclick="overlayClose(event,'draftOverlay')">
+    <!-- Prep / Takeaways -->
+    <div id="prepOverlay" class="overlay" onclick="overlayClose(event,'prepOverlay')" role="dialog" aria-modal="true">
       <div class="sheet" onclick="event.stopPropagation()">
         <div class="sheet-head">
-          <div class="sheet-title" id="draftTitle">Draft Follow-Ups</div>
-          <div class="x" onclick="closeSheet('draftOverlay')">×</div>
+          <div class="sheet-title" id="prepTitle">Prep Notes</div>
+          <div class="x" onclick="closeSheet('prepOverlay')">×</div>
         </div>
-        <div id="draftList" class="attendees"></div>
+        <textarea id="prepMsg"></textarea>
         <div class="row-btns">
-          <button class="i-btn" onclick="saveDrafts()">Save as Drafts</button>
-          <button class="i-btn primary" onclick="sendAllDrafts()">Send All Now</button>
+          <button class="i-btn" onclick="closeSheet('prepOverlay')">Close</button>
+          <button class="i-btn primary" onclick="savePrep()">Save</button>
         </div>
       </div>
     </div>
 
-    <!-- Takeaways -->
-    <div id="takeOverlay" class="overlay" onclick="overlayClose(event,'takeOverlay')">
-      <div class="sheet" onclick="event.stopPropagation()">
-        <div class="sheet-head">
-          <div class="sheet-title" id="takeTitle">Event Takeaways</div>
-          <div class="x" onclick="closeSheet('takeOverlay')">×</div>
-        </div>
-        <textarea id="takeMsg" placeholder="Top takeaways, people to introduce, next steps..."></textarea>
-        <div class="row-btns">
-          <button class="i-btn" onclick="closeSheet('takeOverlay')">Close</button>
-          <button class="i-btn primary" onclick="saveTakeaways()">Save Takeaways</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Reminder -->
-    <div id="remOverlay" class="overlay" onclick="overlayClose(event,'remOverlay')">
-      <div class="sheet" onclick="event.stopPropagation()">
-        <div class="sheet-head">
-          <div class="sheet-title" id="remTitle">Set Reminder</div>
-          <div class="x" onclick="closeSheet('remOverlay')">×</div>
-        </div>
-        <div class="field">
-          <label class="small">Reminder time</label>
-          <input id="remTime" type="datetime-local" />
-        </div>
-        <div class="field">
-          <label class="small">Note (optional)</label>
-          <input id="remNote" type="text" placeholder="e.g., bring QR codes / name badges" />
-        </div>
-        <div class="row-btns">
-          <button class="i-btn" onclick="closeSheet('remOverlay')">Cancel</button>
-          <button class="i-btn primary" onclick="saveReminder()">Save Reminder</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- In-App Communication -->
-    <div id="commOverlay" class="overlay" onclick="overlayClose(event,'commOverlay')">
+    <!-- Compose (Email/Text/Call) -->
+    <div id="commOverlay" class="overlay" onclick="overlayClose(event,'commOverlay')" role="dialog" aria-modal="true">
       <div class="sheet" onclick="event.stopPropagation()">
         <div class="sheet-head">
           <div class="sheet-title" id="commTitle">Compose</div>
@@ -243,7 +371,7 @@
         <div class="field">
           <label class="small">To</label>
           <input id="commTo" type="text" readonly />
-          <div id="commError" class="error-hint" style="display:none;"></div>
+          <div id="commError" class="small" style="color:var(--danger);display:none;"></div>
         </div>
         <div class="field">
           <label class="small">Channel</label>
@@ -264,423 +392,343 @@
       </div>
     </div>
 
+    <!-- Add Note (per person) -->
+    <div id="noteOverlay" class="overlay" onclick="overlayClose(event,'noteOverlay')" role="dialog" aria-modal="true">
+      <div class="sheet" onclick="event.stopPropagation()">
+        <div class="sheet-head">
+          <div class="sheet-title" id="noteTitle">Add Note</div>
+          <div class="x" onclick="closeSheet('noteOverlay')">×</div>
+        </div>
+        <textarea id="noteMsg" placeholder="Jot a quick note…"></textarea>
+        <div class="row-btns">
+          <button class="i-btn" onclick="closeSheet('noteOverlay')">Cancel</button>
+          <button class="i-btn primary" onclick="saveNote()">Save Note</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
+<!-- Hidden input for camera/selfie capture -->
+<input id="selfieInput" type="file" accept="image/*" capture="environment" style="display:none" />
+
 <script>
-/* ---------- Mock Data ---------- */
-const data = {
-  upcoming: [
-    { id:'e1', name:'Chamber Meeting',
-      whenExact:'Tomorrow, Sept 23 at 7:00 PM',
-      address:'123 Main St, Springfield, NJ 07081',
-      directions:'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent('123 Main St, Springfield, NJ 07081'),
-      details:'Our monthly Chamber meeting brings together local owners and operators for announcements, a quick community pulse-check, and open networking. Expect 60-second intros, a sponsor spotlight, and breakout tables designed to surface referral opportunities.',
-      rsvps: [
-        {id:'u1', initials:'LC', name:'Liam Carter', title:'Mortgage Advisor', company:'Carter Lending', email:'liam@carterlending.com', phone:'(848) 555-0101', status:'Going', saved:true, savedType:'Prospect', persona:'Referral Partner', industry:'Financial Services', tags:['Homebuyers','Referrals'], lastMet:'Aug 14', score:78, notes:'Introduced by Jenna; likes short morning calls.'},
-        {id:'u2', initials:'GL', name:'Grace Lee', title:'Photographer', company:'Grace Shots', email:'grace@graceshots.studio', phone:'(201) 555-0164', status:'Maybe', saved:true, savedType:'Contact', persona:'Vendor', industry:'Creative', tags:['Brand','Content'], lastMet:'Jul 30', score:64, notes:'Prefers texts; busy on Wed mornings.'},
-        {id:'u3', initials:'EP', name:'Ethan Patel', title:'CPA', company:'Patel Accounting', email:'ethan@patelaccounting.com', phone:'(856) 555-0177', status:'Going', saved:true, savedType:'Lead', persona:'Referral Partner', industry:'Accounting', tags:['Tax','S-Corp'], lastMet:'Sep 2', score:82, notes:'Asked for intro to realtors.'},
-        {id:'u4', initials:'PM', name:'Priya Menon', title:'Physical Therapist', company:'Shore PT', email:'priya@shorept.health', phone:'(609) 555-0145', status:'Not going', saved:false, persona:'Referral Partner', industry:'Healthcare'},
-        {id:'u5', initials:'GP', name:'George Park', title:'Contractor', company:'Park Builders', email:'george@parkbuilders.com', phone:'(856) 555-0139', status:'Going', saved:true, savedType:'Contact', persona:'Referral Partner', industry:'Construction', tags:['Commercial','Remodel'], lastMet:'Aug 28', score:71, notes:'Interested in co-hosting workshop.'},
-        {id:'u6', initials:'MC', name:'Maya Chen', title:'Marketing Strategist', company:'Beacon Labs', email:'maya@beaconlabs.io', phone:'', status:'Maybe', saved:false, persona:'Consultant', industry:'Marketing'},
-        {id:'u7', initials:'SK', name:'Samir Kapoor', title:'IT Services Owner', company:'FixIT', email:'', phone:'(973) 555-0188', status:'Going', saved:true, savedType:'Contact', persona:'Vendor', industry:'Technology', tags:['MSP','Security'], lastMet:'Jun 10', score:59, notes:'Prefers afternoon calls.'},
-        {id:'u8', initials:'JR', name:'Jenna Rivera', title:'Real Estate Agent', company:'RivHomes', email:'jenna@rivhomes.com', phone:'(908) 555-0191', status:'Going', saved:false, persona:'Referral Partner', industry:'Real Estate'},
-        {id:'u9', initials:'TB', name:'Tom Brooks', title:'Attorney', company:'Brooks & Klein', email:'tom@bk-legal.com', phone:'', status:'Not going', saved:true, savedType:'Prospect', persona:'Advisor', industry:'Legal', tags:['Estate','LLC'], lastMet:'May 9', score:66, notes:'Wants case studies for small firms.'},
-        {id:'u10', initials:'AK', name:'Alicia Khan', title:'HR Consultant', company:'People Pulse', email:'alicia@peoplepulse.co', phone:'(848) 555-0170', status:'Going', saved:false, persona:'Consultant', industry:'HR'}
-      ]
-    },
-    { id:'e2', name:'BNI Rock Solid',
-      whenExact:'Wednesday, Sept 25 at 7:00 AM',
-      address:'44 Ocean Ave, Manahawkin, NJ 08050',
-      directions:'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent('44 Ocean Ave, Manahawkin, NJ 08050'),
-      details:'A weekly, high-tempo BNI meeting with 60-second commercials, a featured presentation, referral slips, and structured 1-to-1 scheduling. Expect 20–30 attendees and a strong emphasis on measurable introductions.',
-      rsvps: [
-        {id:'u11', initials:'DO', name:'Daniel Ortiz', title:'Demand Gen Lead', company:'Pipelane', email:'daniel@pipelane.io', phone:'(848) 555-0179', status:'Going', saved:true, savedType:'Contact', persona:'Marketer', industry:'SaaS', tags:['ABM','Funnels'], lastMet:'Aug 7', score:74, notes:'Loves data; prefers afternoon emails.'},
-        {id:'u12', initials:'IR', name:'Isabella Rossi', title:'Marketing Manager', company:'Rossi Marketing', email:'isabella@rossimktg.com', phone:'(732) 555-0191', status:'Maybe', saved:false, persona:'Marketer', industry:'Marketing'},
-        {id:'u13', initials:'DO', name:'Derek O’Neil', title:'Plumber', company:'FlowPro', email:'', phone:'(609) 555-0193', status:'Going', saved:false, persona:'Trades', industry:'Home Services'},
-        {id:'u14', initials:'LK', name:'Leah Kim', title:'Product Designer', company:'Sketchly', email:'leah@sketchly.design', phone:'', status:'Not going', saved:true, savedType:'Lead', persona:'Designer', industry:'Design', tags:['UX','Brand'], lastMet:'Jul 2', score:63, notes:'Considering rebrand this fall.'},
-        {id:'u15', initials:'NP', name:'Nate Price', title:'Financial Advisor', company:'Price Wealth', email:'nate@pricewealth.com', phone:'(973) 555-0121', status:'Going', saved:false, persona:'Advisor', industry:'Financial Services'}
-      ]
-    }
-  ],
-  previous: [
-    { id:'e3', name:'Chamber Mixer',
-      whenExact:'Yesterday, Sept 22 at 6:00 PM',
-      address:'1 Civic Plaza, Summit, NJ 07901',
-      details:'Open-format chamber mixer featuring sponsor tables, lightning intros, and a short panel on small-business capital. Lots of casual conversation pockets—good for warm intros and quick discovery chats.',
-      rsvps: [
-        {id:'p1', initials:'AB', name:'Ava Brooks', title:'Sales Director', company:'Northline', email:'ava@northline.app', phone:'(908) 555-0186', status:'Going', saved:true, savedType:'Contact', persona:'Economic Buyer', industry:'SaaS', tags:['RevOps','BDR'], lastMet:'Yesterday', score:88, notes:'Interested in partner webinar.'},
-        {id:'p2', initials:'NS', name:'Noah Smith', title:'Software Engineer', company:'CodeCo', email:'noah@codeco.dev', phone:'(973) 555-0152', status:'Going', saved:false, persona:'Technical Buyer', industry:'Technology'},
-        {id:'p3', initials:'SG', name:'Sophia Gomez', title:'Event Planner', company:'Gomez Events', email:'sophia@gomezevents.co', phone:'(732) 555-0112', status:'Maybe', saved:true, savedType:'Prospect', persona:'Vendor', industry:'Events', tags:['Venues','Vendors'], lastMet:'Aug 21', score:70, notes:'Asked for venue checklist.'},
-        {id:'p4', initials:'EP', name:'Eli Park', title:'General Contractor', company:'ParkBuild', email:'', phone:'(201) 555-0122', status:'Going', saved:false, persona:'Trades', industry:'Construction'},
-        {id:'p5', initials:'MH', name:'Mina Hassan', title:'UX Researcher', company:'Bright UX', email:'mina@brightux.io', phone:'', status:'Not going', saved:true, savedType:'Lead', persona:'Designer', industry:'Design', tags:['Interviews','B2B'], lastMet:'Sep 1', score:61, notes:'Prefers async docs.'},
-        {id:'p6', initials:'JW', name:'Jackie Wu', title:'Realtor', company:'UrbanNest', email:'jackie@urbannest.com', phone:'(908) 555-0155', status:'Going', saved:false, persona:'Referral Partner', industry:'Real Estate'},
-        {id:'p7', initials:'RK', name:'Raj Khanna', title:'CFO', company:'Triventa', email:'raj@triventa.com', phone:'', status:'Going', saved:true, savedType:'Contact', persona:'Economic Buyer', industry:'Manufacturing', tags:['ERP','Cost'], lastMet:'Aug 3', score:75, notes:'Morning emails best.'},
-        {id:'p8', initials:'VG', name:'Vera Grant', title:'Operations Manager', company:'GrantWorks', email:'vera@grantworks.co', phone:'', status:'Maybe', saved:false, persona:'Ops', industry:'Logistics'},
-        {id:'p9', initials:'LC', name:'Luis Cortez', title:'Insurance Broker', company:'Cortez Coverage', email:'luis@cortezcoverage.com', phone:'(732) 555-0133', status:'Going', saved:false, persona:'Advisor', industry:'Insurance'},
-        {id:'p10', initials:'AM', name:'Anita Malik', title:'Founder', company:'Hone & Co', email:'', phone:'(856) 555-0174', status:'Going', saved:true, savedType:'Prospect', persona:'Founder', industry:'Ecommerce', tags:['DTC','Email'], lastMet:'Aug 18', score:69, notes:'Evaluating CRM options.'}
-      ],
-      followupsBase: 'Loved our chat at the mixer. I have a couple ideas that could save you time next quarter—open to a quick compare-notes chat next week?'
-    },
-    { id:'e4', name:'BNI Manahawkin',
-      whenExact:'Last Wednesday, Sept 18 at 7:00 AM',
-      address:'88 Bay Ave, Manahawkin, NJ 08050',
-      details:'Weekly chapter meeting with warm referrals, a 10-minute feature, and structured asks. Great for lining up 1-to-1s and practical intros.',
-      rsvps: [
-        {id:'p11', initials:'TR', name:'Theo Ramos', title:'Videographer', company:'Ramos Films', email:'theo@ramosfilms.tv', phone:'', status:'Going', saved:false, persona:'Vendor', industry:'Creative'},
-        {id:'p12', initials:'YL', name:'Yuri Lin', title:'Chiropractor', company:'AlignWell', email:'yuri@alignwell.health', phone:'(848) 555-0119', status:'Going', saved:true, savedType:'Contact', persona:'Healthcare', industry:'Health', tags:['Local','Wellness'], lastMet:'Aug 28', score:72, notes:'Prefers morning calls.'},
-        {id:'p13', initials:'BP', name:'Ben Park', title:'Bookkeeper', company:'Orderly Books', email:'ben@orderlybooks.com', phone:'', status:'Maybe', saved:false, persona:'Finance', industry:'Accounting'},
-        {id:'p14', initials:'CR', name:'Cindy Ruiz', title:'Event Florist', company:'Blooms Co', email:'cindy@blooms.co', phone:'', status:'Not going', saved:true, savedType:'Lead', persona:'Vendor', industry:'Events', tags:['Seasonal'], lastMet:'Aug 6', score:56, notes:'Busy season; prefers brief emails.'},
-        {id:'p15', initials:'OM', name:'Omar Malik', title:'PPC Specialist', company:'AdGears', email:'omar@adgears.io', phone:'(973) 555-0140', status:'Going', saved:false, persona:'Marketer', industry:'Marketing'}
-      ],
-      followupsBase: 'Great meeting at BNI—think we could swap a couple intros. Want to put 15 min on the calendar next week?'
-    }
-  ]
-};
+/* ---------- Mock Long Text ---------- */
+const lorem = `
+<p><strong>What to Expect</strong></p>
+<p>A structured flow with intros, sponsor spotlight, and breakout tables designed to surface referral opportunities.</p>
+<p>Bring 30–40 business cards and be ready with a tight 20-second “specific ask.” Doors open 15 minutes early for coffee and informal chat.</p>
+<p><em>Parking:</em> Municipal garage across the street. <em>Dress:</em> Business casual.</p>`;
+const loremAgenda = `
+<p><strong>Agenda</strong></p>
+<ul>
+  <li>7:00–7:10 Check-in & Coffee</li>
+  <li>7:10–7:30 Lightning Intros</li>
+  <li>7:30–7:50 Sponsor Talk + Q&A</li>
+  <li>7:50–8:15 Breakouts / 1-to-1 Scheduling</li>
+  <li>8:15–8:30 Open Networking</li>
+</ul>`;
 
-let selectedEventForReminder = null;
-let lastCompleted = null; // {section, event}
-let commTarget = null;    // {type, person, message, email, phone, originBtn}
+/* ---------- Mock People ---------- */
+function P(id, name, title, company, email, phone, saved=false, pic=null){
+  return {id, name, title, company, email, phone, saved, pic};
+}
+const attendeesA = [
+  P('a1','Liam Carter','Mortgage Advisor','Carter Lending','liam@carterlending.com','+18485550101',true),
+  P('a2','Grace Lee','Photographer','Grace Shots','grace@graceshots.studio','+12015550164',true),
+  P('a3','Ethan Patel','CPA','Patel Accounting','ethan@patelaccounting.com','+18565550177',true),
+  P('a4','Priya Menon','Physical Therapist','Shore PT','priya@shorept.health','+16095550145',false),
+];
+const attendeesB = [
+  P('b1','Daniel Ortiz','Demand Gen Lead','Pipelane','daniel@pipelane.io','+18485550179',true),
+  P('b2','Isabella Rossi','Marketing Manager','Rossi Marketing','isabella@rossimktg.com','+17325550191',false),
+  P('b3','Derek O’Neil','Plumber','FlowPro','','+16095550193',false),
+  P('b4','Leah Kim','Product Designer','Sketchly','leah@sketchly.design','',true),
+];
+const attendeesC = [
+  P('c1','Chris Bell','VP Sales','NeonPeak','chris@neonpeak.io','+17325550122',true),
+  P('c2','Rita Mendez','Founder','MendWell','rita@mendwell.co','+17325550111',true),
+  P('c3','Hiroko Kato','Ops Lead','RiverNine','hiroko@rivernine.com','',false),
+];
+const attendeesD = [
+  P('d1','Kathy Lin','Accountant','Lin & Co','kathy@linco.tax','+17325550155',true),
+  P('d2','Paul Diaz','Project Manager','BuildRight','paul@buildright.pro','+17325550188',false),
+  P('d3','Sara Torres','Owner','Craft&Co','sara@craftnco.com','+17325550112',true),
+];
+const attendeesE = [
+  P('e1','Ava Brooks','Sales Director','Northline','ava@northline.app','+19085550186',true),
+  P('e2','Noah Smith','Software Engineer','CodeCo','noah@codeco.dev','+19735550152',false),
+  P('e3','Sophia Gomez','Event Planner','Gomez Events','sophia@gomezevents.co','+17325550112',true),
+];
+const attendeesF = [
+  P('f1','Raj Khanna','CFO','Triventa','raj@triventa.com','',true),
+  P('f2','Vera Grant','Operations Manager','GrantWorks','vera@grantworks.co','',false),
+  P('f3','Luis Cortez','Insurance Broker','Cortez Coverage','luis@cortezcoverage.com','+17325550133',false),
+];
+const speakers = [
+  P('s1','Dr. Nina Park','Keynote','Nexus Health','nina@nexus.health','',true),
+  P('s2','Owen Moss','Marketing Director','FWD Labs','owen@fwdlabs.io','+17325550144',true),
+];
 
-/* ---------- Render ---------- */
-function render(){
-  const up = data.upcoming;
-  document.getElementById('badgeUpcoming').textContent = `${up.length} item${up.length===1?'':'s'}`;
-  document.getElementById('upcomingList').innerHTML = up.map(evCardHTML.bind(null,'upcoming')).join('');
+/* ---------- State ---------- */
+const draftsById = {};  // keep last-typed messages per channel
+let commTarget = null;  // {type, person, email, phone}
+let noteTarget = null;  // person
+const selfieInput = document.getElementById('selfieInput');
 
-  const prev = data.previous;
-  document.getElementById('badgePrevious').textContent = `${prev.length} item${prev.length===1?'':'s'}`;
-  document.getElementById('previousList').innerHTML = prev.map(evCardHTML.bind(null,'previous')).join('');
+/* ---------- Footer icons ---------- */
+function icon(name){
+  switch(name){
+    case 'mail': return `<svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg>`;
+    case 'phone': return `<svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0  0 1 4.11 2h3a2 2 0  0 1 2 1.72c.12.9.3 1.77.57 2.61a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0  0  0 6 6l1.47-1.11a2 2 0 0 1 2.11-.45c.84.27 1.71.45 2.61.57A2 2 0 0 1 22 16.92z"/></svg>`;
+    case 'chat': return `<svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>`;
+    case 'calendar': return `<svg viewBox="0 0 24 24"><path d="M3 8h18M5 4h14v16H5z"/><path d="M16 2v4M8 2v4"/></svg>`;
+    case 'note': return `<svg viewBox="0 0 24 24"><path d="M4 3h14l2 2v16H4z"/><path d="M9 13h6M9 9h6M9 17h3"/></svg>`;
+  }
+}
+document.querySelectorAll('#footer-tray [data-icon]').forEach(el=>{
+  el.innerHTML = icon(el.getAttribute('data-icon')) || '';
+});
+
+/* ---------- Menus / Overlays / Toasts ---------- */
+function toggleMenu(e){
+  const dd = e.currentTarget.querySelector('.menu');
+  const open = dd.classList.contains('show');
+  document.querySelectorAll('.menu').forEach(m=>m.classList.remove('show'));
+  if(!open) dd.classList.add('show');
+  e.stopPropagation();
+}
+document.addEventListener('click', ()=>document.querySelectorAll('.menu').forEach(m=>m.classList.remove('show')));
+
+function showSheet(id){ document.getElementById(id).classList.add('show'); }
+function closeSheet(id){ document.getElementById(id).classList.remove('show'); }
+function overlayClose(e,id){ if(e.target.id===id) closeSheet(id); }
+
+function showPush(text){
+  const el = document.getElementById('push');
+  el.textContent = text;
+  el.classList.add('show');
+  clearTimeout(showPush._t);
+  showPush._t = setTimeout(()=>el.classList.remove('show'), 2200);
 }
 
-function mapLink(address){
-  return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(address);
-}
-
-function evCardHTML(section, ev){
-  const subLineUpcoming = `
-    <span>${ev.whenExact}</span><br>
-    <span>${ev.address}</span>
-    ${section==='upcoming' ? ` • <a href="${mapLink(ev.address)}" target="_blank" rel="noopener">Get directions</a>`:''}
-  `;
-  const subLinePrevious = `
-    <span>${ev.whenExact}</span><br>
-    <span>${ev.address}</span>
-  `;
-  const attendeesCount = (ev.rsvps?.length||0);
-
-  const rsvpCtl = `
-    <div class="row">
-      <select class="ev-rsvp" onchange="setRSVP('${section}','${ev.id}',this.value)">
-        <option value="">Going?</option>
-        <option>Yes</option>
-        <option>No</option>
-        <option>Maybe</option>
-      </select>
-    </div>`;
-
-  const actionsUpcoming = `
-    ${rsvpCtl}
-    <div class="cta" onclick="openRSVPs('${section}','${ev.id}')">View RSVPs (${attendeesCount})</div>
-    <div class="row">
-      <div class="cta ghost" data-action="details" onclick="openDetails('${ev.name}', \`${ev.details}\`)">See Event Details</div>
-      <div class="cta ghost" data-action="reminder" onclick="openReminder('${ev.id}','${ev.name}')">Set Reminder</div>
-      <div class="cta ghost" data-action="calendar" onclick="addToCalendar('${ev.id}')">Add to Calendar</div>
-    </div>`;
-
-  const actionsPrevious = `
-    <div class="cta" onclick="openRSVPs('${section}','${ev.id}')">View Attendees (${attendeesCount})</div>
-    <div class="row">
-      <div class="cta ghost" onclick="openDetails('${ev.name}', \`${ev.details}\`)">See Event Details</div>
-      <div class="cta ghost" onclick="openDrafts('${ev.id}','${ev.name}')">Draft Follow-Ups</div>
-    </div>
-    <div class="row">
-      <div class="cta ghost" onclick="openTakeaways('${ev.id}','${ev.name}')">Add Takeaways</div>
-      <div class="cta ghost" onclick="markComplete('${section}','${ev.id}')">Mark Complete</div>
-    </div>`;
-
-  return `
-    <div class="ev-card" id="ev-${ev.id}">
-      <div class="ev-top">
-        <div class="ev-ico">📅</div>
-        <div class="ev-header">
-          <div class="ev-name">${ev.name}</div>
-          <div class="ev-sub">${section==='upcoming' ? subLineUpcoming : subLinePrevious}</div>
-        </div>
-      </div>
-      <div class="ev-actions">
-        ${section==='upcoming' ? actionsUpcoming : actionsPrevious}
-      </div>
-    </div>`;
-}
-
-/* ---------- Event actions ---------- */
-function openDetails(name, details){
-  document.getElementById('detailsTitle').textContent = name + ' — Details';
-  document.getElementById('detailsBody').innerHTML = `<p>${details}</p>`;
+/* ---------- Long text / Agenda ---------- */
+function openLong(title, html){
+  document.getElementById('detailsTitle').textContent = title;
+  document.getElementById('detailsBody').innerHTML = html;
   showSheet('detailsOverlay');
 }
-function setRSVP(section, evId, val){ showPush(`RSVP set: ${val || 'No response'}.`); }
-function openRSVPs(section, evId){
-  const ev = (section==='upcoming' ? data.upcoming : data.previous).find(e=>e.id===evId);
-  if(!ev) return;
-  document.getElementById('attTitle').textContent = `${ev.name} — ${section==='upcoming'?'RSVPs':'Attendees'}`;
-  document.getElementById('attBody').innerHTML = (ev.rsvps||[]).map(p=>rsvpCardHTML(p)).join('');
+
+/* ---------- Register / Check-in / Alerts ---------- */
+function register(id){
+  document.getElementById('badge-1').textContent = 'Registered';
+  const btn = document.getElementById('reg-1');
+  if(btn){
+    // remove "Register" and "Not Now"
+    btn.remove();
+    const row = btn.parentElement;
+    const notNowBtn = Array.from(row.children).find(b => b.textContent.trim() === 'Not Now');
+    if(notNowBtn) notNowBtn.remove();
+    // add "Prep for Event" to match Screen 2
+    const prepBtn = document.createElement('button');
+    prepBtn.className = 'cta';
+    prepBtn.textContent = 'Prep for Event';
+    prepBtn.onclick = ()=>openPrep('Local Chamber Breakfast — Prep Notes');
+    row.appendChild(prepBtn);
+    showPush('You are registered.');
+  }
+}
+function checkIn(id){
+  document.getElementById('badge-3').textContent = 'Checked-in';
+  const row = document.getElementById('row-3');
+  if(row){
+    row.querySelector('button').remove(); // remove "Check In"
+    showPush('Checked in.');
+  }
+}
+function toggleLike(btnId, msg){
+  const b = document.getElementById(btnId);
+  b.classList.add('success'); b.classList.remove('ghost');
+  b.textContent = 'Enabled ✓';
+  showPush(msg);
+}
+
+/* Not Now removes the screen and scrolls to the next */
+function notNow(sectionId){
+  const sec = document.getElementById(sectionId);
+  if(!sec) return;
+  const next = sec.nextElementSibling;
+  sec.remove();
+  if(next && next.scrollIntoView){
+    next.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  showPush('Event dismissed.');
+}
+
+/* ---------- Prep / Takeaways ---------- */
+function openPrep(title, isTakeaways=false){
+  document.getElementById('prepTitle').textContent = title;
+  const t = document.getElementById('prepMsg');
+  t.value = isTakeaways
+    ? `Top takeaways:\n• \n• \n• \n\nPeople to introduce:\n• \n\nNext steps:\n• `
+    : `Prep checklist:\n• Who do I want to meet?\n• My quick ask (20s):\n• 1–2 case studies to mention:\n• Follow-up promise:\n\nNotes:\n• `;
+  showSheet('prepOverlay');
+}
+function savePrep(){ closeSheet('prepOverlay'); showPush('Saved.'); }
+
+/* ---------- Share ---------- */
+function share(where){ showPush(`Sharing to ${where}…`); }
+
+/* ---------- Selfies / Camera ---------- */
+function takeSelfie(){
+  selfieInput.onchange = ()=>{
+    if(selfieInput.files && selfieInput.files[0]){
+      showPush('Selfie saved to this event.');
+    }
+  };
+  selfieInput.click();
+}
+
+/* ---------- People Lists ---------- */
+function openPeople(key, title, list, {bulk}){
+  document.getElementById('attTitle').textContent = title;
+  document.getElementById('bulkRow').style.display = bulk ? 'flex' : 'none';
+  const body = document.getElementById('attBody');
+  body.innerHTML = list.map(personCard).join('');
   showSheet('attOverlay');
 }
-function addToCalendar(evId){
-  showPush('Event added to your calendar.');
-  const card = document.getElementById('ev-'+evId);
-  const btn = card?.querySelector('[data-action="calendar"]');
-  if(btn){
-    btn.classList.add('success');
-    btn.classList.remove('ghost');
-    btn.textContent = 'Added to Calendar';
-  }
+function initialsOf(name){
+  return name.split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
 }
-function openReminder(evId, evName){
-  selectedEventForReminder = evId;
-  document.getElementById('remTitle').textContent = `Set Reminder — ${evName}`;
-  document.getElementById('remTime').value = '';
-  document.getElementById('remNote').value = '';
-  showSheet('remOverlay');
-}
-function saveReminder(){
-  closeSheet('remOverlay');
-  showPush('Reminder saved.');
-  const card = document.getElementById('ev-'+selectedEventForReminder);
-  const btn = card?.querySelector('[data-action="reminder"]');
-  if(btn){
-    btn.classList.add('success');
-    btn.classList.remove('ghost');
-    btn.textContent = 'Reminder Set';
-  }
-}
-
-/* ---------- Draft Follow-Ups ---------- */
-function openDrafts(evId, evName){
-  const ev = data.previous.find(e=>e.id===evId);
-  if(!ev) return;
-  const people = personalizeList(ev);
-  document.getElementById('draftTitle').textContent = `Draft Follow-Ups — ${evName}`;
-  document.getElementById('draftList').innerHTML = people.map(p=>{
-    const to = p.email || p.phone || 'no contact';
-    const msg = smartFollowupCopy(p, ev.followupsBase);
-    const pid = p.id;
-    return `
-      <div class="a-card">
-        <div class="a-top">
-          <div class="ava">${p.initials||'?'}</div>
-          <div>
-            <div class="a-name">${p.name}</div>
-            <div class="a-role">${(p.title||'')}${p.company?` @ ${p.company}`:''}</div>
-          </div>
-        </div>
-        <div class="small">To: ${to}</div>
-        <textarea id="msg-${pid}">${msg}</textarea>
-        <div class="a-actions">
-          <button class="btn-sm primary" onclick="openComm('email','${pid}', document.getElementById('msg-${pid}').value, this)">Send Email</button>
-          <button class="btn-sm" onclick="openComm('text','${pid}', document.getElementById('msg-${pid}').value, this)">Send Text</button>
-        </div>
-      </div>`;
-  }).join('');
-  showSheet('draftOverlay');
-}
-function personalizeList(ev){
-  const extra = [
-    {id:'x1', initials:'CB', name:'Chris Bell', title:'VP Sales', company:'NeonPeak', email:'chris@neonpeak.io', persona:'Economic Buyer', industry:'SaaS'},
-    {id:'x2', initials:'RM', name:'Rita Mendez', title:'Founder', company:'MendWell', email:'rita@mendwell.co', persona:'Founder', industry:'Healthcare'},
-    {id:'x3', initials:'HK', name:'Hiroko Kato', title:'Ops Lead', company:'RiverNine', email:'hiroko@rivernine.com', persona:'Ops', industry:'Logistics'},
-    {id:'x4', initials:'JJ', name:'Juan Jose', title:'CTO', company:'DevBricks', email:'juan@devbricks.dev', persona:'Technical Buyer', industry:'Technology'},
-    {id:'x5', initials:'KL', name:'Kathy Lin', title:'Accountant', company:'Lin & Co', email:'kathy@linco.tax', persona:'Finance', industry:'Accounting'},
-    {id:'x6', initials:'PD', name:'Paul Diaz', title:'PM', company:'BuildRight', email:'paul@buildright.pro', persona:'Trades', industry:'Construction'},
-    {id:'x7', initials:'ST', name:'Sara Torres', title:'Owner', company:'Craft&Co', email:'sara@craftnco.com', persona:'Founder', industry:'Retail'},
-    {id:'x8', initials:'OM', name:'Owen Moss', title:'Marketing Dir', company:'FWD Labs', email:'owen@fwdlabs.io', persona:'Marketer', industry:'SaaS'}
-  ];
-  return [...ev.rsvps, ...extra].slice(0,10);
-}
-function smartFollowupCopy(p, base){
-  const greet = `Hi ${firstName(p.name)},`;
-  const personaHint = p.persona ? `Given your role as ${p.persona.toLowerCase()}, ` : '';
-  const industryHint = p.industry ? `in ${p.industry.toLowerCase()}, ` : '';
-  const statusHint = p.status==='Going' ? 'great meeting you there!' :
-                     p.status==='Maybe' ? 'if you made it, hope it was useful—' :
-                     'even though we missed each other,';
-  const custom = base || 'I have a couple ideas that could be helpful—open to a quick 15–20 min chat next week?';
-  return `${greet}
-
-${statusHint} ${personaHint}${industryHint}${custom}
-
-Thanks,
-[from_firstname] [from_lastname]`;
-}
-function sendAllDrafts(){ closeSheet('draftOverlay'); showPush('Follow-ups sent.'); }
-function saveDrafts(){ closeSheet('draftOverlay'); showPush('Follow-ups saved as drafts.'); }
-
-/* ---------- Takeaways ---------- */
-function openTakeaways(evId, evName){
-  document.getElementById('takeTitle').textContent = `Event Takeaways — ${evName}`;
-  document.getElementById('takeMsg').value = '';
-  showSheet('takeOverlay');
-}
-function saveTakeaways(){
-  closeSheet('takeOverlay');
-  showPush('Takeaways saved.');
-}
-
-/* ---------- Complete / Undo ---------- */
-function markComplete(section, evId){
-  const evEl = document.getElementById('ev-'+evId);
-  if(!evEl) return;
-  const arr = data[section];
-  const idx = arr.findIndex(e=>e.id===evId);
-  if(idx<0) return;
-  lastCompleted = {section, event: arr[idx], index: idx};
-
-  // remove from list + update counters
-  arr.splice(idx,1);
-  evEl.remove();
-  const count = arr.length;
-  if(section==='upcoming'){
-    document.getElementById('badgeUpcoming').textContent = `${count} item${count===1?'':'s'}`;
-  }else{
-    document.getElementById('badgePrevious').textContent = `${count} item${count===1?'':'s'}`;
-  }
-
-  // Use the same push banner UI with an Undo action
-  showPush('Event marked complete.', 'Undo', undoComplete);
-}
-function undoComplete(){
-  if(!lastCompleted) return;
-  const {section, event, index} = lastCompleted;
-  data[section].splice(index,0,event);
-  render();
-  // Clear the banner immediately on undo
-  const el = document.getElementById('push');
-  el.classList.remove('show');
-  lastCompleted = null;
-}
-
-/* ---------- RSVP / Attendee Card (with Email/Text/Call) ---------- */
-function rsvpCardHTML(p){
-  const statusColor = p.status==='Going' ? 'background:#e7f7ef;border-color:#b7e7cb;color:#14532d' :
-                     p.status==='Maybe' ? 'background:#fff7e6;border-color:#ffe0a3;color:#7a5500' :
-                     'background:#fdecec;border-color:#f5b7b1;color:#7a1a17';
-  const statusChip = `<span class="chip" style="${statusColor}">${p.status}</span>`;
-
-  const metaChips = [
-    p.persona ? `<span class="chip">Persona: ${p.persona}</span>` : '',
-    p.industry ? `<span class="chip">Industry: ${p.industry}</span>` : '',
-    Array.isArray(p.tags)&&p.tags.length ? `<span class="chip">Tags: ${p.tags.join(', ')}</span>` : '',
-    p.lastMet ? `<span class="chip">Last Met: ${p.lastMet}</span>` : '',
-    typeof p.score==='number' ? `<span class="chip">Score: ${p.score}</span>` : ''
-  ].join('');
-
-  const saveBtn = p.saved ? '' :
-    `<button class="btn-sm primary" onclick="saveContact('${p.id}', this)">Save Contact</button>`;
-
-  const emailBtn = p.email
-    ? `<button class="btn-sm" onclick="openComm('email','${p.id}', null, this)">Email</button>`
-    : `<button class="btn-sm" disabled>Email</button>`;
-
-  const textBtn = p.phone
-    ? `<button class="btn-sm" onclick="openComm('text','${p.id}', null, this)">Text</button>`
-    : `<button class="btn-sm" disabled>Text</button>`;
-
-  const callBtn = p.phone
-    ? `<button class="btn-sm" onclick="openComm('call','${p.id}', null, this)">Call</button>`
-    : `<button class="btn-sm" disabled>Call</button>`;
-
-  const savedLabel = p.saved ? `Already a ${p.savedType||'Contact'} • <a href="#" onclick="showPush('Opening contact…')">View Contact</a>` : '';
-  const notesBlock = p.saved && p.notes ? `<div class="small">Notes: ${p.notes}</div>` : '';
-
+function personCard(p){
+  const saveBtn = p.saved ? '' : `<button class="btn-sm primary" onclick="saveContact('${p.id}', this)">Save Contact</button>`;
+  /* CHANGED: Add to Journey trigger is a button-styled span with a proper absolutely-positioned dropdown (only two options) */
+  const addJourney = `
+    <span class="btn-sm dropdown" role="button" tabindex="0" onclick="toggleMenu(event)">
+      Add to Journey
+      <div class="menu">
+        <button onclick="addToJourney('${p.id}','1-on-1 Meeting Request')">1-on-1 Meeting Request</button>
+        <button onclick="addToJourney('${p.id}','Nurturing Journey')">Nurturing Journey</button>
+      </div>
+    </span>`;
   return `
-    <div class="a-card">
-      <div class="a-top">
-        <div class="ava">${p.initials||'?'}</div>
-        <div style="flex:1">
-          <div class="a-name">${p.name}</div>
-          <div class="a-role">${p.title||''}${p.company?` @ ${p.company}`:''}</div>
-        </div>
-        <div class="a-chips">${statusChip}</div>
+  <div class="a-card">
+    <div class="a-top">
+      <div class="ava">${p.pic?`<img src="${p.pic}" alt="${p.name}">`:initialsOf(p.name)}</div>
+      <div style="flex:1">
+        <div class="a-name">${p.name}</div>
+        <div class="a-role">${p.title || ''}${p.company?` @ ${p.company}`:''}</div>
       </div>
-      <div class="a-chips">${metaChips}</div>
-      ${notesBlock}
-      <div class="a-actions">
-        ${saveBtn}
-        ${emailBtn}
-        ${textBtn}
-        ${callBtn}
-      </div>
-      ${p.saved?`<div class="small">${savedLabel}</div>`:''}
-    </div>`;
+    </div>
+    <div class="a-actions">
+      ${saveBtn}
+      <button class="btn-sm" ${p.email?'':'disabled'} onclick="openComm('email',${encodeURIComponent(JSON.stringify(p)).replace(/"/g,'&quot;')})">Send Email</button>
+      <button class="btn-sm" ${p.phone?'':'disabled'} onclick="openComm('text',${encodeURIComponent(JSON.stringify(p)).replace(/"/g,'&quot;')})">Send Text</button>
+      <button class="btn-sm" ${p.phone?'':'disabled'} onclick="openComm('call',${encodeURIComponent(JSON.stringify(p)).replace(/"/g,'&quot;')})">Call</button>
+      <button class="btn-sm" onclick="openNote(${encodeURIComponent(JSON.stringify(p)).replace(/"/g,'&quot;')})">Add a Note</button>
+      ${addJourney}
+      <button class="btn-sm" onclick="remindPerson('${p.id}')">Remind Me</button>
+    </div>
+  </div>`;
+}
+function saveContact(id, btn){
+  btn.textContent='Contact Saved';
+  btn.classList.remove('primary');
+  btn.classList.add('success');
+  btn.disabled = true;
+  showPush('Contact saved.');
+}
+function remindPerson(id){ showPush('Reminder set.'); }
+
+/* ---------- Bulk Actions ---------- */
+function bulkEmail(){ showPush('Email blast queued to all.'); }
+function bulkText(){ showPush('Text blast queued to all.'); }
+function bulkJourney(){ showPush('All added to selected journey.'); }
+
+/* ---------- Notes ---------- */
+function openNote(p){
+  noteTarget = p;
+  document.getElementById('noteTitle').textContent = `Add Note — ${p.name}`;
+  document.getElementById('noteMsg').value = '';
+  showSheet('noteOverlay');
+}
+function saveNote(){
+  closeSheet('noteOverlay');
+  showPush('Note saved.');
 }
 
-/* ---------- In-App Communication ---------- */
-function openComm(type, id, presetMsg=null, originBtn=null){
-  const person = findPersonById(id);
-  if(!person){ showPush('Contact not found.'); return; }
+/* ---------- Journeys ---------- */
+function addToJourney(id, journey){
+  showPush(`Added to “${journey}”.`);
+}
 
-  const email = person.email || '';
-  const phone = (person.phone||'').replace(/[^+\d]/g,'');
-  const msg = presetMsg || defaultMessage(type, person);
-
-  commTarget = {type, person, message: msg, email, phone, originBtn};
+/* ---------- Compose (Email/Text/Call) ---------- */
+function openComm(type, p){
+  const email = p.email || '';
+  const phone = (p.phone||'').replace(/[^+\d]/g,'');
+  commTarget = {type, person:p, email, phone};
 
   document.getElementById('commTitle').textContent = `Compose — ${capitalize(type)}`;
   document.getElementById('commChannel').value = type;
 
-  setCommToAndUI(type, email, phone, msg);
+  // Restore any draft
+  const key = `${p.id}:${type}`;
+  const msg = draftsById[key] || defaultMessage(type, p);
+
+  setCommToAndUI(type, p.name, email, phone, msg);
   showSheet('commOverlay');
 }
 function onCommChannelChange(){
   if(!commTarget) return;
   const channel = document.getElementById('commChannel').value;
+  // store last draft of old type
+  const oldKey = `${commTarget.person.id}:${commTarget.type}`;
+  const curMsg = document.getElementById('commMsg').value;
+  if(curMsg) draftsById[oldKey] = curMsg;
+
   commTarget.type = channel;
-  const msg = defaultMessage(channel, commTarget.person);
-  commTarget.message = msg;
-  setCommToAndUI(channel, commTarget.email, commTarget.phone, msg);
+  const newKey = `${commTarget.person.id}:${channel}`;
+  const msg = draftsById[newKey] || defaultMessage(channel, commTarget.person);
+  setCommToAndUI(channel, commTarget.person.name, commTarget.email, commTarget.phone, msg);
 }
-function setCommToAndUI(type, email, phone, msg){
+function setCommToAndUI(type, name, email, phone, msg){
   const toEl = document.getElementById('commTo');
   const wrap = document.getElementById('commMsgWrap');
   const sendBtn = document.getElementById('commSendBtn');
   const msgEl = document.getElementById('commMsg');
+  const err = document.getElementById('commError');
+
+  err.style.display='none';
 
   if(type==='email'){
-    toEl.value = `${commTarget.person.name} • ${email||'no email'}`;
+    toEl.value = `${name} • ${email||'no email'}`;
     wrap.style.display='grid';
     msgEl.value = msg;
     sendBtn.disabled = !email;
+    if(!email){ err.textContent='No email on file.'; err.style.display='block'; }
   } else if(type==='text'){
-    toEl.value = `${commTarget.person.name} • ${phone||'no number'}`;
+    toEl.value = `${name} • ${phone||'no number'}`;
     wrap.style.display='grid';
     msgEl.value = msg;
     sendBtn.disabled = !phone;
+    if(!phone){ err.textContent='No mobile number on file.'; err.style.display='block'; }
   } else { // call
-    toEl.value = `${commTarget.person.name} • ${phone||'no number'}`;
-    wrap.style.display='none'; // no textbox for calls
+    toEl.value = `${name} • ${phone||'no number'}`;
+    wrap.style.display='none';
     sendBtn.disabled = !phone;
+    if(!phone){ err.textContent='No phone number on file.'; err.style.display='block'; }
   }
 }
 function sendComm(){
   if(!commTarget) return;
   const channel = document.getElementById('commChannel').value;
+  if(channel!=='call'){
+    const key = `${commTarget.person.id}:${channel}`;
+    draftsById[key] = document.getElementById('commMsg').value || '';
+  }
   closeSheet('commOverlay');
   const who = commTarget.person.name;
-
-  if(commTarget.originBtn){
-    commTarget.originBtn.classList.add('success');
-    commTarget.originBtn.classList.remove('primary');
-    if(channel==='call'){
-      commTarget.originBtn.textContent = 'Call Logged';
-    }else if(channel==='email'){
-      commTarget.originBtn.textContent = 'Email Sent';
-    }else{
-      commTarget.originBtn.textContent = 'Text Sent';
-    }
-  }
-
   if(channel==='call'){
     showPush(`Calling ${who} at ${commTarget.phone}…`);
   } else if(channel==='email'){
@@ -691,92 +739,21 @@ function sendComm(){
   commTarget = null;
 }
 function defaultMessage(type, p){
-  const first = firstName(p.name);
-  const persona = p.persona ? p.persona.toLowerCase() : '';
-  const industry = p.industry ? p.industry.toLowerCase() : '';
-  const tone = p.status==='Going' ? 'Great meeting you at the event.' :
-               p.status==='Maybe' ? 'If you made it, hope it was useful.' :
-               'Sorry we missed each other there.';
-  const hook = persona || industry ? `As a ${[persona,industry].filter(Boolean).join(' in ')}, ` : '';
+  const first = String(p.name||'').split(' ')[0]||p.name;
   if(type==='text'){
-    return `${first}, ${tone.split('.')[0]}. ${hook}open to a quick 15–20 min chat next week to trade notes? — [from_firstname]`;
+    return `${first}, great connecting around the event. Open to a quick 15–20 min chat next week to trade notes? — [from_firstname]`;
   }
   return `Hi ${first},
 
-${tone} ${hook}I jotted a couple ideas that could be helpful—would you be open to a quick 15–20 minute chat next week?
+Enjoyed connecting around the event. I jotted a couple ideas that could be helpful—would you be open to a quick 15–20 minute chat next week?
 
 Best,
 [from_firstname] [from_lastname]`;
 }
-
-/* ---------- Helpers ---------- */
 function capitalize(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
-function saveContact(id, btn){
-  btn.textContent='Contact Saved';
-  btn.classList.remove('primary');
-  btn.classList.add('success');
-  btn.disabled = true;
-  showPush('Contact saved.');
-}
-function firstName(n){ return String(n||'').split(' ')[0]||n; }
-function findPersonById(id){
-  for(const sec of ['upcoming','previous']){
-    for(const ev of data[sec]){
-      const f = (ev.rsvps||[]).find(a=>a.id===id);
-      if(f) return f;
-    }
-  }
-  const card = document.querySelector(`#msg-${id}`)?.closest('.a-card');
-  if(card){
-    const name = card.querySelector('.a-name')?.textContent || 'Contact';
-    const email = /To:\s([^<]+)/.exec(card.innerHTML)?.[1] || '';
-    return { id, name, email: email.includes('@')?email.trim():'', phone:'' };
-  }
-  return null;
-}
 
-/* ---------- Overlay + icons + push ---------- */
-function showSheet(id){ document.getElementById(id).classList.add('show'); }
-function closeSheet(id){ document.getElementById(id).classList.remove('show'); }
-function overlayClose(e,id){ if(e.target.id===id) closeSheet(id); }
-
-function icon(name){
-  switch(name){
-    case 'mail': return `<svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg>`;
-    case 'phone': return `<svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0  0 1-6-6 19.79 19.79 0  0 1-3.07-8.67A2 2 0  0 1 4.11 2h3a2 2 0  0 1 2 1.72c.12.9.3 1.77.57 2.61a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0  0  0 6 6l1.47-1.11a2 2 0 0 1 2.11-.45c.84.27 1.71.45 2.61.57A2 2 0 0 1 22 16.92z"/></svg>`;
-    case 'chat': return `<svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0  0 1 4 4z"/></svg>`;
-    case 'calendar': return `<svg viewBox="0 0 24 24"><path d="M3 8h18M5 4h14v16H5z"/><path d="M16 2v4M8 2v4"/></svg>`;
-    case 'note': return `<svg viewBox="0 0 24 24"><path d="M4 3h14l2 2v16H4z"/><path d="M9 13h6M9 9h6M9 17h3"/></svg>`;
-    case 'undo': return `<svg viewBox="0 0 24 24"><path d="M3 7v6h6"/><path d="M3 13a9 9 0 1 0 3-7"/></svg>`;
-  }
-}
-(function populateFooterIcons(){
-  document.querySelectorAll('#footer-tray [data-icon]').forEach(el=>{
-    const name=el.getAttribute('data-icon');
-    el.innerHTML = icon(name) || '';
-  });
-})();
-
-function showPush(text, actionLabel=null, actionHandler=null){
-  const el = document.getElementById('push');
-  if(actionLabel && typeof actionHandler === 'function'){
-    el.innerHTML = `<span>${text}</span><button class="push-action" id="pushActionBtn">${actionLabel}</button>`;
-    setTimeout(()=>{ // bind after insertion
-      const btn = document.getElementById('pushActionBtn');
-      if(btn){
-        btn.onclick = (e)=>{ e.stopPropagation(); actionHandler(); };
-      }
-    },0);
-  }else{
-    el.textContent = text;
-  }
-  el.classList.add('show');
-  clearTimeout(showPush._t);
-  showPush._t = setTimeout(()=>el.classList.remove('show'), 2300);
-}
-
-/* ---------- Init ---------- */
-render();
+/* ---------- Utility ---------- */
+function safeText(s){ return String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
 </script>
 </body>
 </html>
